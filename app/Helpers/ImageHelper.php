@@ -8,66 +8,41 @@ use Aws\Laravel\AwsServiceProvider;
 if (! function_exists('thumb_image')) {
     function thumb_image($path = "", $size = "", $type = "")
     {
-        if($type == 'article'){
-			$path_thumbs     = config('constants.media-path-article-thumb');
-			$server_thumbs   = config('constants.media-server-article-thumb');
-			$path_original   = config('constants.media-path-article');
-			$server_original = config('constants.media-server-article');
-		}else if($type == 'produk'){
-			$path_thumbs     = config('constants.media-path-produk-thumb');
-			$server_thumbs   = config('constants.media-server-produk-thumb');
-			$path_original   = config('constants.media-path-produk');
-			$server_original = config('constants.media-server-produk');
+       if($type == 'produk'){
+			$server_thumbs   = env('MEDIA_PRODUK_THUMB');	
+			$server_original = env('MEDIA_PRODUK');
 		}else if($type == 'blog'){
-			$path_thumbs     = config('constants.media-path-blog-thumb');
-			$server_thumbs   = config('constants.media-server-blog-thumb');
-			$path_original   = config('constants.media-path-blog');
-			$server_original = config('constants.media-server-blog');
+			$server_thumbs   = env('MEDIA_BLOG_THUMB');
+			$server_original = env('MEDIA_BLOG');
 		}else if($type == 'img_ori'){
-			$path_original   = config('constants.media-path-images-original');
-			$server_original = config('constants.media-server-images-original');
+			$server_original = env('MEDIA_ORIGINAL_TEMP');
 		}else if($type == 'img_ori_thumb'){
-			$path_original   = config('constants.media-path-images-orithumb');
-			$server_original = config('constants.media-server-images-orithumb');
+			$server_original = env('MEDIA_ORIGINAL_THUMB');
 		}else if($type == 'icon_industri'){
-			$path_original   = config('constants.media-path-icons-industri');
-			$server_original = config('constants.media-server-icons-industri');
+			$server_original = env('MEDIA_ICON_INDUSTRI');
 		}else if($type == 'advertiser'){
-			$path_original   = config('constants.media-path-advertiser');
-			$server_original = config('constants.media-server-advertiser');
+			$server_original = env('MEDIA_ADVERTISER');
 		}else if($type == 'img_industri'){
-			$path_original   = config('constants.media-path-images-industri');
-			$server_original = config('constants.media-server-images-industri');
+			$server_original = env('MEDIA_INDUSTRI');
 		}else if($type == 'images_negara'){
-			$path_original   = config('constants.media-path-images-negara');
-			$server_original = config('constants.media-server-images-negara');
+			$server_original = env('MEDIA_NEGARA');
 		}else if($type == 'images_sismik2d'){
-			$path_original   = config('constants.media-path-images-sismik2d');
-			$server_original = config('constants.media-server-images-sismik2d');
+			$server_original = env('MEDIA_SISMIK2d');
 		}else if($type == 'images_sismik3d'){
-			$path_original   = config('constants.media-path-images-sismik3d');
-			$server_original = config('constants.media-server-images-sismik3d');
+			$server_original = env('MEDIA_SISMIK3d');
 		}else if($type == 'marketing'){
-			$path_thumbs     = config('constants.media-path-marketing-images-thumb');
-			$server_thumbs   = config('constants.media-server-marketing-images-thumb');
-			$path_original   = config('constants.media-path-marketing-images');
-			$server_original = config('constants.media-server-marketing-images');
+			$server_thumbs   = env('MEDIA_MARKETING_THUMB');
+			$server_original = env('MEDIA_MARKETING');
 		}else if($type == 'artikelmember'){
-			$path_thumbs     = config('constants.media-path-images-artikelmember-thumb');
-			$server_thumbs   = config('constants.media-server-images-artikelmember-thumb');
-			$path_original   = config('constants.media-path-images-artikelmember');
-			$server_original = config('constants.media-server-images-artikelmember');
+			$server_thumbs   = env('MEDIA_ARTICLE_MEMBER_THUMB');
+			$server_original = env('MEDIA_ARTICLE_MEMBER');
 		}else if($type == 'seismik2d'){
-			$path_original   = config('constants.media-path-images-sismik2d');
-			$server_original = config('constants.media-server-images-sismik2d');
+			$server_original = env('MEDIA_SISMIK2d');
 		}else if($type == 'seismik3d'){
-			$path_original   = config('constants.media-path-images-sismik3d');
-			$server_original = config('constants.media-server-images-sismik3d');
+			$server_original = env('MEDIA_SISMIK3d');
 		}else{
-			$path_thumbs     = config('constants.media-path-images-thumb');
-			$server_thumbs   = config('constants.media-server-images-thumb');
-			$path_original   = config('constants.media-path-images');
-			$server_original = config('constants.media-server-images');
+			$server_thumbs   = env('MEDIA_THUMBS');
+			$server_original = env('MEDIA');
 		}
 
       
@@ -76,209 +51,162 @@ if (! function_exists('thumb_image')) {
 			$exp_img = explode(".", $path);			
 			
 			if(isset($size) && $size != "") {
+				
 				if($size == "620x413shared1"){
 					$size ="620x413";
 					$size_true ="620x413shared1";
-					if(file_exists($path_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1])) {
-						$str_path = $server_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1];
+					if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1])){
+						$str_path = Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1]);
 					}else{
-						// echo $path_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1];
-						if($size_true == "620x413shared1"){
-							if(file_exists($path_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])) {
-								$str_path_new = $path_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
+						if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])){
+							$name_array = explode("/", $exp_img[0]);
+							$s3_file = Storage::disk('s3')->get($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1]);
+							$s3 = Storage::disk('public');
+							$s3->put("./".$name_array[3]."_".$size."_thumb.".$exp_img[1], $s3_file);
+						
+							if(Storage::disk('local')->exists(env('PUBLIC_STORAGE').$name_array[3]."_".$size."_thumb.".$exp_img[1])){	
+								$str_path_new = $server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
 								$file_final_name_og = $exp_img[0].'_'.$size.'_shared1.'.$exp_img[1];
-								$des_path_og =  $path_thumbs . $file_final_name_og;
-								$logo = 'logo.png';
-								$generate = $CI->image_moo
-									->load($str_path_new)
+								$des_path_og =  $server_thumbs . $file_final_name_og;
+								$generate =  ImageMoo::load(Storage::disk('local')->path(env('PUBLIC_STORAGE').$name_array[3]."_".$size."_thumb.".$exp_img[1]))
 									->resize_crop('600' ,'315')
-									->set_watermark_transparency(1)
-									->load_watermark(config('constants.media-path-sample').$logo)
+									->set_watermark_transparency(100)
+									->load_watermark(env('PUBLIC_STORAGE')."logo.png")
 									->watermark(3,0)
-									->save($des_path_og);
-								if(file_exists($des_path_og)){
-									$str_path = $server_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1];
-								}else{
-									$str_path = $server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
-								}
+									->save(Storage::disk('local')->path(env('PUBLIC_STORAGE').$name_array[3]."_".$size."_shared1.".$exp_img[1]));
+									Storage::disk('s3')->put($server_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1], fopen(Storage::disk('local')->path(env('PUBLIC_STORAGE').$name_array[3]."_".$size."_shared1.".$exp_img[1]),'r+'),'public');
+									// dihapus
+									$str_path = Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_shared1.".$exp_img[1]);
+
+							}else{
+								$str_path = Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1]);
 							}
-						}else if(file_exists($path_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])) {
-							$str_path = $server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
-						} else {
-							if ($type == 'profile'){
-								$str_path = config('constants.frontend_template_v2').'images/'."no_picture_profile.jpg";
-							} else if ($type == 'cover'){
-								$str_path = config('constants.frontend_template_v2').'images/'."cover-header".rand(2,4).".jpg";
-							} else if ($type == "profil" || $type == "logo" || $type == "icon_industri" || $type == "img_industri" || $type == "opini" || $type == "advertiser") {
-								if(file_exists($path_original.$path)) {
-									$str_path = $server_original.$path;
-								} else {
-									if ($type == 'opini') {
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
-									}else{
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
-									}
-								}
-							} else if ($type == "images_negara") {
-								if(file_exists($path_original.$path)) {
-									$str_path = $server_original.$path;
-								} else {
-									if ($type == 'opini') {
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
-									}else{
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
-									}
-								}
-							} else {
-								$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
-							}
+						}else{
+							$str_path = Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1]);
 						}
+						
 					}
 				}else if($size == "500x500shared"){
 					$size ="500x500";
-					if(file_exists($path_thumbs.$exp_img[0]."_".$size."_shared.".$exp_img[1])) {
-						$str_path = $server_thumbs.$exp_img[0]."_".$size."_shared.".$exp_img[1];
+					if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."_".$size."_shared.".$exp_img[1])){
+						$str_path =Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_shared.".$exp_img[1]);
 					}else{
-						if(file_exists($path_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])) {
-							$str_path = $server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
+						if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])){
+							$str_path = $str_path =Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1]);
 						} else {
 							if ($type == 'profile'){
-								$str_path = config('constants.frontend_template_v2').'images/'."no_picture_profile.jpg";
+								$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_picture_profile.jpg";
 							} else if ($type == 'cover'){
-								$str_path = config('constants.frontend_template_v2').'images/'."cover-header".rand(2,4).".jpg";
+								$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."cover-header".rand(2,4).".jpg";
 							} else if ($type == "profil" || $type == "logo" || $type == "icon_industri" || $type == "img_industri" || $type == "opini" || $type == "advertiser") {
 								if(file_exists($path_original.$path)) {
-									$str_path = $server_original.$path;
+									$str_path = Storage::disk('s3')->url($server_original.$path);
 								} else {
 									if ($type == 'opini') {
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
+										$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_square.jpg";
 									}else{
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+										$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 									}
 								}
 							} else if ($type == "images_negara") {
-								if(file_exists($path_original.$path)) {
-									$str_path = $server_original.$path;
+								if(file_exists($server_original.$path)) {
+									$str_path = Storage::disk('s3')->url($server_original.$path);
 								} else {
 									if ($type == 'opini') {
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
+										$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_square.jpg";
 									}else{
-										$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+										$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 									}
 								}
 							} else {
-								$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+								$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 							}
 						}
 					}
 				}else{
-					if(file_exists($path_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])) {
-						
-						if (env('USE_GOOGLECLOUD_THUMBNAIL')== true && $type == "") {
-							if (env('USE_WEBP') == true) {
-								if (file_exists(config('constants.media-path-images-thumb-webp').$exp_img[0]."_".$size."_thumb.".$exp_img[1])) {
-									$str_path = config('constants.url_production_googlestorage_thumb_webp').$exp_img[0]."_".$size."_thumb.".$exp_img[1];
-								}else{
-									$str_path = config('constants.url_production_googlestorage_thumb').$exp_img[0]."_".$size."_thumb.".$exp_img[1];		
-								}
-							}else{
-								$str_path = config('constants.url_production_googlestorage_thumb').$exp_img[0]."_".$size."_thumb.".$exp_img[1];	
-							}
-						}else{
-							if (env('USE_WEBP') == true) {
-								if (file_exists(config('constant.media-path-images-thumb-webp').$exp_img[0]."_".$size."_thumb.".$exp_img[1])) {
-									$server_thumbs = config('constants.media-server-images-thumb-webp');
-									$str_path = $server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
-								}else{
-									$str_path = $server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
-								}
-							}else{
-								$str_path = $server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1];
-							}
-						}
-
+					if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])){
+						$str_path = Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1]);
 					} else {
+						
 						if ($type == 'profile'){
-							$str_path = config('constants.frontend_template_v2').'images/'."no_picture_profile.jpg";
+							$str_path =	Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_picture_profile.jpg";
 						} else if ($type == 'cover'){
-							$str_path = config('constants.frontend_template_v2').'images/'."cover-header".rand(2,4).".jpg";
+							$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."cover-header".rand(2,4).".jpg";
 						} else if ($type == "profil" || $type == "logo" || $type == "icon_industri" || $type == "img_industri" || $type == "opini" || $type == "advertiser") {
-							if(file_exists($path_original.$path)) {
-								$str_path = $server_original.$path;
+							if(file_exists($server_original.$path)) {
+								$str_path = Storage::disk('s3')->url($server_original.$path);
 							} else {
 								if ($type == 'opini') {
-									$str_path = config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
+									$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_square.jpg";
 								}else{
-									$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+									$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 								}
 							}
 						} else if ($type == "images_negara") {
-							if(file_exists($path_original.$path)) {
-								$str_path = $server_original.$path;
+							if(Storage::disk('s3')->exists($server_original.$path)){
+								$str_path = Storage::disk('s3')->url($server_original.$path);
 							} else {
 								if ($type == 'opini') {
-									$str_path = config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
+									$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_square.jpg";
 								}else{
-									$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+									$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 								}
 							}
 						} else {
-							$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+							$str_path =  Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 						}
 					}
 				}
 				
 			} else {
 				if ($type != "kuis") {
-					if(file_exists($path_original.$path)) {
-						if (env('USE_GOOGLECLOUD_THUMBNAIL')== true && $type == 'img_ori_thumb'){
-							$str_path = config('constants.url_production_googlestorage_thumb_ori').$path;	
-						}else{
-							$str_path = $server_original.$path;	
-						}
+					
+					if(Storage::disk('s3')->exists($server_original.$path)){
+						$str_path = Storage::disk('s3')->url($server_original.$path);
 					} else {
 						if($type == 'profile'){
-							$str_path = config('constants.frontend_template_v2').'images/'."no_picture_profile.jpg";
+							return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_picture_profile.jpg";
+	
 						}else if($type == 'cover'){
-							$str_path = config('constants.frontend_template_v2').'images/'."cover-header".rand(2,4).".jpg";
+							return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."cover-header".rand(2,4).".jpg";
+							
 						}else if($type == 'opini'){
-							$str_path = config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
+							return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_square.jpg";
 						}else if($type == 'img_ori_thumb'){
-							$path_original   = config('constants.media-path-images-original');
-							$server_original = config('constants.media-server-images-original');
-							if(file_exists($path_original.$path)) {
-								$str_path = $server_original.$path;
+							$server_original = env('MEDIA_ORIGINAL_THUMB');
+							if(Storage::disk('s3')->exists($server_original.$path)){
+								$str_path = Storage::disk('s3')->url($server_original.$path);
 							} else {
-								$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+								$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 							}
 						}else{
-							$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+							$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 						}
 					}
 				} else {
-					if(file_exists($path_thumbs.$path)) {
+					if(Storage::disk('s3')->exists($server_original.$path)){
 
-						if (isset($type) && $type == "kuis" && file_exists($path_original.$path)) {
-							$str_path = $server_original.$path;
+						if (isset($type) && $type == "kuis") {
+							$str_path =  Storage::disk('s3')->url($server_original.$path);
 						}else{
-							$str_path = $server_thumbs.$path;
+							$str_path =  Storage::disk('s3')->url($server_thumbs.$path);
 						}
 						
 					} else {
-						$str_path = config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+						$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
 					}
 				}
 			}
 			return $str_path;
 		} else {
 			if($type == 'profile'){
-				return config('constants.frontend_template_v2').'images/'."no_picture_profile.jpg";
+				return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_picture_profile.jpg";
 			}else if($type == 'cover'){
-				return config('constants.frontend_template_v2').'images/'."cover-header".rand(2,4).".jpg";
+				return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES')."cover-header".rand(2,4).".jpg");
 			}else if($type == 'opini'){
-				return config('constants.frontend_template_v2').'images/'."no_image_square.jpg";
+				return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES')."no_image_square.jpg");
 			}else{
-				return config('constants.frontend_template_v2').'images/'."no_image_news.jpg";
+				return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES')."no_image_news.jpg");
 			}
 		}
     }
@@ -331,20 +259,69 @@ if(!function_exists('thumb_onthefly_Article')){
 		}
 	}
 }
+if ( ! function_exists('thumb_image_cover')) {
+	function thumb_image_cover ($path = "", $size = "", $type = ""){
+		## DEFINE THE IMAGE ##
+
+		$server_thumbs   = env('MEDIA_THUMBS');
+		$server_original = env('MEDIA');
+
+		if($path != "") {
+			$str_path = "";
+			$exp_img = explode(".", $path);			
+			
+			$str_path = Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1]);
+			return $str_path;
+		} else {
+			return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES'))."no_image_news.jpg";
+		}
+	}
+}
+if ( ! function_exists('thumb_image_analisis')) {
+	function thumb_image_analisis($path = ""){
+		$server_original =  env('MEDIA');
+
+		$str_path = Storage::disk('s3')->url($server_original).$path;
+
+		return $str_path;
+	}
+} 
+if ( ! function_exists('thumb_image_profil')) {
+	function thumb_image_profil($path = "",$size = ""){
+		$server_thumbs   = env('MEDIA_THUMBS');
+		$server_original = env('MEDIA');
+		$str_path = "";
+		$exp_img = explode(".", $path);			
+		if(isset($size) && $size != "") {
+			if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1])) {
+				$str_path = Storage::disk('s3')->url($server_thumbs.$exp_img[0]."_".$size."_thumb.".$exp_img[1]);
+			}else{
+				if (Storage::disk('s3')->exists($server_original.$path)) {
+					$str_path = Storage::disk('s3')->url($server_original.$path);
+				}else{
+					$str_path = Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES')).'images/user.png';	
+				}
+			}
+		}else{
+			$str_path = Storage::disk('s3')->url($server_original.$path);
+		}
+
+		return $str_path;
+	}
+}
+
 if (! function_exists('generate_thumbnail')) {
     function generate_thumbnail($value)
     {
 		 if (isset($value['imagecover']['path']) && $value['imagecover']['path'] !="") { // cek path didatabase 
 			if(isset($value['imagecover']['is_old']) && $value['imagecover']['is_old'] == '1') { // is_old : image lama yg tdk ada di thumbnail 
-				if(file_exists(config('constants.media-path-oldmedia').$value['imagecover']['path'])) { // cek file image, (ada) buat thumbnail dgn onthefly 
+				
 					if (isset($value['id_category']) && $value['id_category'] == config('constants.category-id-opini')) { // jika kategori opini, crop 1 : 1 
 						return  thumb_onthefly_Article($value['imagecover']['path'], 300, 300, 'crop');
 					} else { 
 						return thumb_onthefly_Article($value['imagecover']['path'], 300, 200, 'auto');
 					} 
-				} else { 
-					return thumb_image("");
-				}
+			
 			} else { // bukan image lama 
 				if (isset($value['imagecover']['tipe']) && $value['imagecover']['tipe'] == 3) { // image tipe 3 (cover infografik) 
 					if (isset($value['image']['path']) && $value['image']['path'] !="") { // pakai image body 
@@ -355,7 +332,7 @@ if (! function_exists('generate_thumbnail')) {
 						return  thumb_image("") ;
 					} 
 				} else { // image biasa 
-					if (isset($value['id_category']) && $value['id_category'] == $this->webconfig['category-id-opini']) { // jika kategori opini, 1 : 1 
+					if (isset($value['id_category']) && $value['id_category'] == config('constants.category-id-opini')) { // jika kategori opini, 1 : 1 
 							if ($value['tipe'] == 4) {
 								return  thumb_image($value['image']['path'],"620x413"); 
 							}else{
@@ -380,5 +357,36 @@ if (! function_exists('generate_thumbnail')) {
 		} else { // jika tidak ada path (no image) 
 			return thumb_image("") ;
 		} 
+	}
+}
+if ( ! function_exists('thumb_onthefly_wideimage')) {
+	function thumb_onthefly_wideimage($path){
+		$server_thumbs   = env('MEDIA_THUMBS');
+		if ($path != "") {
+			$str_path = "";		
+			$exp_img = explode(".", $path);
+				if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."_620x413_thumb.".$exp_img[1])) {
+					if(Storage::disk('s3')->exists($server_thumbs.$exp_img[0]."__620x413__share.".$exp_img[1])){
+						return Storage::disk('s3')->url($server_thumbs.$exp_img[0]."__620x413__share.".$exp_img[1]);
+					}else{
+						$name_array = explode("/", $exp_img[0]);
+						$s3_file = Storage::disk('s3')->get($server_thumbs.$exp_img[0]."_620x413_thumb.".$exp_img[1]);
+						$s3 = Storage::disk('public');
+						$s3->put("./".$name_array[3]."_620x413_thumb.".$exp_img[1], $s3_file);
+						if(Storage::disk('local')->exists(env('PUBLIC_STORAGE').$name_array[3]."_620x413_thumb.".$exp_img[1])){	
+							$height = 600 * 21 / 40;
+							$image = WideImage::load(Storage::disk('local')->path(env('PUBLIC_STORAGE').$name_array[3]."_620x413_thumb.".$exp_img[1]));
+							$cropped = $image->crop(0, 0, 600, $height)->resize(600, 315);
+					        $cropped->saveToFile(Storage::disk('local')->path(env('PUBLIC_STORAGE').$name_array[3]."__620x413__share.".$exp_img[1]), 100);
+							Storage::disk('s3')->put($server_thumbs.$exp_img[0]."__620x413__share.".$exp_img[1], fopen(Storage::disk('local')->path(env('PUBLIC_STORAGE').$name_array[3]."__620x413__share.".$exp_img[1]),'r+'),'public');
+		                	return Storage::disk('s3')->url($server_thumbs.$exp_img[0]."__620x413__share.".$exp_img[1]);
+						}
+					}
+				}
+			
+
+		}else{
+			return Storage::disk('s3')->url(env('FRONTEND_TEMPLATE_V1_IMAGES')).'images/'."no_image_news.jpg";	
+		}
 	}
 }
