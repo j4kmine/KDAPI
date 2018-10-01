@@ -309,9 +309,50 @@ if ( ! function_exists('thumb_image_profil')) {
 		return $str_path;
 	}
 }
+if(!function_exists('generate_thumbnail')){
+	function generate_thumbnail($value)
+    {
+	
+		if (isset($value['imagecover']['path']) && $value['imagecover']['path'] !="") { // cek path didatabase 
+			if(isset($value['imagecover']['is_old']) && $value['imagecover']['is_old'] == '1') { // is_old : image lama yg tdk ada di thumbnail 
+				   return thumb_onthefly_Article($value['imagecover']['path'], 300, 200, 'auto') ;
+			} else { // bukan image lama 
+				if (isset($value['imagecover']['tipe']) && $value['imagecover']['tipe'] == 3) { // image tipe 3 (cover infografik) 
+					if (isset($value['image']['path']) && $value['image']['path'] !="") { // pakai image body 
+					   return thumb_image($value['image']['path'],"300x200") ;
+					} elseif($value['tipe'] == 6 || $value['tipe'] == 8 ) { // tipe 6 (artikel tableu) 
+					   return thumb_image_cover($value['imagecover']['path'],"300x200") ;
+					} else { 
+					   return thumb_image("") ;
+					} 
+			   } else { // image biasa 
+				   if ($value['id_category'] == 2) {
+					   if ($value['tipe'] == 4) {
+						   return thumb_image($value['image']['path'],"620x413") ;
+					   }else{
+						   
+						   if(isset($value['og_image']['path']) && $value['og_image']['path'] != ''){ 
+							   return thumb_image($value['og_image']['path'],"620x413");
+						   }else{ 
+							   return thumb_image_cover($value['image']['path'],"620x413") ;
+						   } 
+							   
+					   }
+				   }else{ 
+						   return thumb_image($value['imagecover']['path'],"300x200");
+				   } 
+				} 
+			} 
+			if(isset($value['tipe']) && $value['tipe'] == '3'){ // tipe 3 (artikel video) 
+			} 
+		} else { // jika tidak ada path (no image) 
+		   return thumb_image("");
+		} 
 
-if (! function_exists('generate_thumbnail')) {
-    function generate_thumbnail($value)
+	}
+}
+if (! function_exists('generate_thumbnails')) {
+    function generate_thumbnails($value)
     {
 		 if (isset($value['imagecover']['path']) && $value['imagecover']['path'] !="") { // cek path didatabase 
 			if(isset($value['imagecover']['is_old']) && $value['imagecover']['is_old'] == '1') { // is_old : image lama yg tdk ada di thumbnail 
