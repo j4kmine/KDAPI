@@ -161,7 +161,8 @@ class ContentController extends Controller{
                     FROM images WHERE id  = '".$value->id_image_cover."' 
                  ");
                  if(isset($tempdata[0]) && $tempdata[0] != ''){
-                     $content[$key]['imagescover'] = generate_thumbnail(json_decode(json_encode($tempdata[0]), True));
+                     $content[$key]['imagescover'] = $tempdata[0];
+                     $content[$key]['imagescover_display'] =  generate_thumbnail(json_decode(json_encode($content[$key]), True));
                  }
                      
                 }else{
