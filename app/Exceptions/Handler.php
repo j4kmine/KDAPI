@@ -44,6 +44,28 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        
+         
+            if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+                 $message ="error connecting API";
+                 return response()->json(["error" => $message]);
+            }
+             $message ="error connecting API";
+            if($exception->getStatusCode() == "401" ){
+                $message = "You are not logged in, e.g. using a valid access token";
+            }else if($exception->getStatusCode() == "403"){
+                $message = "You are authenticated but do not have access to what you are trying to do";
+            }else if($exception->getStatusCode() == "404"){
+                $message = "The resource you are requesting does not exist";
+            }else if($exception->getStatusCode() == "405"){
+                $message = "The request type is not allowed, e.g. /users is a resource and POST /users is a valid action but PUT /users is not.";
+            }else if($exception->getStatusCode() == "422"){
+                $message = "The request and the format is valid, however the request was unable to process. For instance when sent data does not pass validation tests.";
+            }else if($exception->getStatusCode() == "500"){
+                $message = "An error occured on the server which was not the consumer's fault.n";
+            }
+            return response()->json(["error" => $message]);
+        
         return parent::render($request, $exception);
     }
 
@@ -56,10 +78,10 @@ class Handler extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
-        }
+      
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+        
 
-        return redirect()->guest(route('login'));
+     
     }
 }

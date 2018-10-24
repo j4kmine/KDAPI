@@ -12,8 +12,9 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('content', ['uses' => 'API\ContentController@index']);
-// Route::group(['middleware' => 'auth:api'], function(){
-// 	Route::post('content', ['uses' => 'API\ContentController@index']);
-// });
+// Route::get('content', ['uses' => 'API\ContentController@index']);
+Route::post('generate', ['uses' => 'API\ContentController@generate']);
+Route::group(['middleware' => 'auth:api'], function(){
+	Route::post('content', ['uses' => 'API\ContentController@index']);
+});
 

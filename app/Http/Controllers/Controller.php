@@ -1,5 +1,19 @@
 <?php
-
+/**
+ * @SWG\Swagger(
+ *     basePath="/api",
+ *     schemes={"http", "https"},
+ *     host=L5_SWAGGER_CONST_HOST,
+ *     @SWG\Info(
+ *         version="1.0.0",
+ *         title="Katadata API",
+ *         description="Dokumentasi Katadata API",
+ *         @SWG\Contact(
+ *             email="it.team@katadata.co.id"
+ *         ),
+ *     )
+ * )
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;

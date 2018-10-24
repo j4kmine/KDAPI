@@ -4,9 +4,39 @@ use Illuminate\Http\Request;
 use App\Models\ContentModel;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\User;
+use Illuminate\Support\Facades\Auth; 
 class ContentController extends Controller{
-    public $success_status = 200;
+   public $success_status = 200;
     public function index(Request $request){
+        /**
+         * @SWG\Post(
+         *      path="/content",
+         *      operationId="getContent",
+         *      tags={"Projects"},
+         *      summary="Listing Content data",
+         *      description="Returns content data",
+         *      @SWG\Parameter(
+         *          name="id_category",
+         *          description="id category",
+         *          required=true,
+         *          type="integer",
+         *          in="path"
+         *      ),
+         *      @SWG\Response(
+         *          response=200,
+         *          description="successful operation"
+         *       ),
+         *      @SWG\Response(response=400, description="Bad request"),
+         *      @SWG\Response(response=404, description="Resource Not Found"),
+         *      security={
+         *         {
+         *             "oauth2_security_example": {"write:projects", "read:projects"}
+         *         }
+         *     },
+         * )
+         *
+         */
         $input = $request->json();
         $page = 0 ;
         $redis_query = "_CONTENT_";
@@ -121,7 +151,8 @@ class ContentController extends Controller{
                 $temp = json_decode($content);
                 return response()->json(['data'=>$temp],$this->success_status);
             }else{
-                $content = $content->paginate(10);
+                $content = $content->orderBy('date_publish', 'desc')->paginate(10);
+
                 $content = $this->__getCategory($content);
                 $content = $this->__getTopics($content);
                 $content = $this->__getFoto($content);
@@ -131,7 +162,8 @@ class ContentController extends Controller{
                 $redis->expire($redis_query, env("REDIS_TIMEOUT"));
             }
         }else{
-            $content = $content->paginate(10);
+            $content = $content->orderBy('date_publish', 'desc')->paginate(10);
+
             $content = $this->__getCategory($content);
             $content = $this->__getTopics($content);
             $content = $this->__getFoto($content);
